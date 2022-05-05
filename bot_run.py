@@ -22,15 +22,7 @@ engines: dict[str, SearchEngine] = {
 scrapper: Scrapper = GoogleRestScrapper(os.environ['SERP_API_KEY'])
 core: BotApi = BotApiImpl(bot, database, engines, scrapper)
 
-known_commands = ['start', 'help', 'search', 'stats', 'history']
-
-
-def filter_if_unknown(message: types.Message) -> bool:
-    stripped: str = message.text.lstrip()
-    for command in known_commands:
-        if stripped.startswith(f'/{command}'):
-            return False
-    return True
+known_commands: list[str] = ['start', 'help', 'search', 'stats', 'history']
 
 
 @dp.message_handler(commands=['start'])
