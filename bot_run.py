@@ -1,8 +1,6 @@
 import os
 
-from aiogram import Bot, types
-from aiogram.dispatcher import Dispatcher
-from aiogram.utils import executor
+from aiogram import Bot, types, Dispatcher, executor
 from dotenv import load_dotenv
 from core.bot_core import BotApi, BotApiImpl
 from core.database import BotDatabase, BotDatabaseImpl
