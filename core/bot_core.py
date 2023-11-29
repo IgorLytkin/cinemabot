@@ -14,27 +14,30 @@ from .scrapper import Scrapper
 class BotApi(ABC):
 
     @abstractmethod
-    async def handle_start(self, message: types.Message) -> None:
+    async def process_start_command(self, message: types.Message) -> None:
+        await message.answer(
+            text='Этот бот пытается найти для Вас кино\n\n'
+                 'Чтобы перейти к поиску - введите ключевые слова и нажмите Enter'
+        )
+
+    @abstractmethod
+    async def process_help_command(self, message: types.Message) -> None:
         pass
 
     @abstractmethod
-    async def handle_help(self, message: types.Message) -> None:
+    async def process_history_command(self, message: types.Message) -> None:
         pass
 
     @abstractmethod
-    async def handle_history(self, message: types.Message) -> None:
+    async def process_stats_command(self, message: types.Message) -> None:
         pass
 
     @abstractmethod
-    async def handle_stats(self, message: types.Message) -> None:
+    async def process_search_command(self, message: types.Message) -> None:
         pass
 
     @abstractmethod
-    async def handle_search(self, message: types.Message) -> None:
-        pass
-
-    @abstractmethod
-    async def handle_unknown(self, message: types.Message) -> None:
+    async def process_unknown_command(self, message: types.Message) -> None:
         pass
 
 
@@ -47,24 +50,24 @@ class BotApiImpl(BotApi):
         self.engines = engines
         self.scrapper = scrapper
 
-    async def handle_start(self, message: types.Message) -> None:
+    async def process_start_command(self, message: types.Message) -> None:
         await self.bot.send_message(message.chat.id, START_MESSAGE)
 
-    async def handle_help(self, message: types.Message) -> None:
+    async def process_help_command(self, message: types.Message) -> None:
         await self.bot.send_message(message.chat.id, HELP_MESSAGE)
 
-    async def handle_history(self, message: types.Message) -> None:
+    async def process_history_command(self, message: types.Message) -> None:
         history: list[SearchEntity] = await self.database.load_search_entities(message.chat.id)
         result = '\n'.join(reversed([self._search_entity_to_str(item) for item in history]))
         await self.bot.send_message(message.chat.id, result)
 
-    async def handle_stats(self, message: types.Message) -> None:
+    async def process_stats_command(self, message: types.Message) -> None:
         stats: list[StatsEntity] = await self.database.load_stats_entities(message.chat.id)
         stats = sorted(stats, key=lambda item: -item.count)
         result = '\n'.join([self._stats_entity_to_str(item) for item in stats])
         await self.bot.send_message(message.chat.id, result)
 
-    async def handle_search(self, message: types.Message) -> None:
+    async def process_search_command(self, message: types.Message) -> None:
         result: Optional[Movie] = None
         result_kp: Optional[Movie] = await self.engines['kinopoisk'].search_movie(message.get_args())
         result_tmdb: Optional[Movie] = await self.engines['tmdb'].search_movie(message.get_args())
@@ -90,7 +93,7 @@ class BotApiImpl(BotApi):
                                      result.id_tmdb)
         await self.database.save_search_entity(search_entity)
 
-    async def handle_unknown(self, message: types.Message) -> None:
+    async def process_unknown_command(self, message: types.Message) -> None:
         await message.reply(UNKNOWN_COMMAND_MESSAGE)
 
     @staticmethod

@@ -25,32 +25,32 @@ known_commands: list[str] = ['start', 'help', 'search', 'stats', 'history']
 
 @dp.message_handler(commands=['start'])
 async def handle_start(message: types.Message):
-    await core.handle_start(message)
+    await core.process_start_command(message)
 
 
 @dp.message_handler(commands=['help'])
 async def handle_help(message: types.Message):
-    await core.handle_help(message)
+    await core.process_help_command(message)
 
 
 @dp.message_handler(commands=['search'])
 async def handle_search(message: types.Message):
-    await core.handle_search(message)
+    await core.process_search_command(message)
 
 
 @dp.message_handler(commands=['stats'])
 async def handle_stats(message: types.Message):
-    await core.handle_stats(message)
+    await core.process_stats_command(message)
 
 
 @dp.message_handler(commands=['history'])
 async def handle_stats(message: types.Message):
-    await core.handle_history(message)
+    await core.process_history_command(message)
 
 
 @dp.message_handler()
 async def handle_unknown(message: types.Message):
-    await core.handle_unknown(message)
+    await core.process_unknown_command(message)
 
 
 if __name__ == '__main__':
